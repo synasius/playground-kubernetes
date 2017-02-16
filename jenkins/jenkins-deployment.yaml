@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-ui
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: 8080
+  type: LoadBalancer
+  selector:
+    name: jenkins-app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-discovery
+spec:
+  ports:
+    - port: 50000
+      name: jenkins-master
+  selector:
+    name: jenkins-app
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins-app
+spec:
+  template:
+    metadata:
+      labels:
+        name: jenkins-app
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: jenkins-app
+          image: jenkinsci/jenkins:2.37
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-data
+          awsElasticBlockStore:
+            volumeID: vol-0231b4b9a4205f95c
+            fsType: ext4
