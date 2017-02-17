@@ -7,6 +7,7 @@ metadata:
     component: logstash
     role: consumer
 spec:
+  type: LoadBalancer
   selector:
     product: elk
     component: logstash
@@ -39,7 +40,7 @@ spec:
       - name: logstash-consumer
         image: logstash:5.2.0
         args:
-        - -e "input { tcp { port => 3509 } } output { elasticsearch { hosts => ["es-client:9200"]} }"
+        - '-e input { tcp { port => 3509 } } output { elasticsearch { hosts => ["es-client:9200"]} }'
         ports:
         - containerPort: 3509
           name: http
