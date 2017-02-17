@@ -1,21 +1,43 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+---
+apiVersion: v1
+kind: Service
 metadata:
   name: es-master
   labels:
+    product: elk
     component: elasticsearch
     role: master
 spec:
+  clusterIP: None
+  selector:
+    product: elk
+    component: elasticsearch
+    role: master
+  ports:
+  - name: transport
+    port: 9300
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: es-master
+  labels:
+    product: elk
+    component: elasticsearch
+    role: master
+spec:
+  serviceName: "es-master"
   replicas: 1
   template:
     metadata:
       labels:
+        product: elk
         component: elasticsearch
         role: master
       annotations:
         pod.beta.kubernetes.io/init-containers: '[
           {
-          "name": "sysctl",
+            "name": "sysctl",
             "image": "busybox",
             "imagePullPolicy": "IfNotPresent",
             "command": ["sysctl", "-w", "vm.max_map_count=262144"],
@@ -25,44 +47,38 @@ spec:
           }
         ]'
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
       - name: es-master
-        securityContext:
-          privileged: true
-          capabilities:
-            add:
-              - IPC_LOCK
-        image: quay.io/pires/docker-elasticsearch-kubernetes:5.2.0
-        imagePullPolicy: Always
+        image: elasticsearch:5.2.0
         env:
         - name: NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: "CLUSTER_NAME"
-          value: "myesdb"
-        - name: "NUMBER_OF_MASTERS"
-          value: "1"
-        - name: NODE_MASTER
-          value: "true"
-        - name: NODE_INGEST
-          value: "false"
-        - name: NODE_DATA
-          value: "false"
-        - name: HTTP_ENABLE
-          value: "false"
-        - name: NETWORK_HOST
-          value: "0.0.0.0"
-        - name: "ES_JAVA_OPTS"
-          value: "-Xms256m -Xmx256m"
+        - name: ES_JAVA_OPTS
+          value: -Xms256m -Xmx256m
+        args:
+        - -Ecluster.name=escluster
+        - -Enode.name=${HOSTNAME}
+        - -Ediscovery.zen.ping.unicast.hosts=es-master.${NAMESPACE}.svc.cluster.local
+        - -Ediscovery.zen.minimum_master_nodes=1
+        - -Enode.master=true
+        - -Enode.data=false
+        - -Enode.ingest=false
         ports:
         - containerPort: 9300
           name: transport
-          protocol: TCP
         volumeMounts:
-        - name: storage
-          mountPath: /data
-      volumes:
-          - emptyDir:
-              medium: ""
-            name: "storage"
+        - name: data-volume
+          mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data-volume
+      annotations:
+        volume.beta.kubernetes.io/storage-class: default
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
