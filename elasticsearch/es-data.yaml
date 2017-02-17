@@ -27,7 +27,7 @@ metadata:
     role: data
 spec:
   serviceName: "es-data"
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -63,6 +63,7 @@ spec:
         - -Enode.name=${HOSTNAME}
         - -Ediscovery.zen.ping.unicast.hosts=es-master.${NAMESPACE}.svc.cluster.local
         - -Enode.master=false
+        - -Etransport.host=0.0.0.0
         - -Enode.data=true
         - -Enode.ingest=false
         ports:

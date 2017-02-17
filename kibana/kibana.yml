@@ -6,6 +6,7 @@ metadata:
     product: elk
     component: kibana
 spec:
+  type: LoadBalancer
   selector:
     product: elk
     component: kibana

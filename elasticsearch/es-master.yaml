@@ -63,6 +63,7 @@ spec:
         - -Enode.name=${HOSTNAME}
         - -Ediscovery.zen.ping.unicast.hosts=es-master.${NAMESPACE}.svc.cluster.local
         - -Ediscovery.zen.minimum_master_nodes=1
+        - -Etransport.host=0.0.0.0
         - -Enode.master=true
         - -Enode.data=false
         - -Enode.ingest=false

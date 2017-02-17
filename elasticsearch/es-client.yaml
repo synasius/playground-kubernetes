@@ -8,6 +8,7 @@ metadata:
     component: elasticsearch
     role: client
 spec:
+  type: LoadBalancer
   selector:
     product: elk
     component: elasticsearch
@@ -60,6 +61,7 @@ spec:
         - -Ecluster.name=escluster
         - -Enode.name=${HOSTNAME}
         - -Ediscovery.zen.ping.unicast.hosts=es-master.${NAMESPACE}.svc.cluster.local
+        - -Etransport.host=0.0.0.0
         - -Enode.master=false
         - -Enode.data=false
         - -Enode.ingest=false
