@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash-consumer
+  labels:
+    product: elk
+    component: logstash
+    role: consumer
+spec:
+  selector:
+    product: elk
+    component: logstash
+    role: consumer
+  ports:
+  - name: http
+    port: 3509
+    targetPort: 3509
+    protocol: TCP
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: logstash-consumer
+  labels:
+    product: elk
+    component: logstash
+    role: consumer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        product: elk
+        component: logstash
+        role: consumer
+    spec:
+      containers:
+      - name: logstash-consumer
+        image: logstash:5.2.0
+        args:
+        - -e "input { tcp { port => 3509 } } output { elasticsearch { hosts => ["es-client:9200"]} }"
+        ports:
+        - containerPort: 3509
+          name: http
+          protocol: TCP
