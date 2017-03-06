@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoo
+spec:
+  ports:
+  - port: 2888
+    name: peer
+  - port: 3888
+    name: leader-election
+  clusterIP: None
+  selector:
+    product: zookeeper
+
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: zoo
+spec:
+  serviceName: "zoo"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        product: zookeeper
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: zookeeper
+          image: evonove/zookeeper:k8s
+          imagePullPolicy: Always
+          env:
+            - name: ZOO_SERVERS
+              value: server.1=zoo-0.zoo.tutorial.svc.cluster.local:2888:3888 server.2=zoo-1.zoo.tutorial.svc.cluster.local:2888:3888 server.3=zoo-2.zoo.tutorial.svc.cluster.local:2888:3888
+            - name: ZOO_INIT_LIMIT
+              value: "10"
+            - name: ZOO_SYNC_LIMIT
+              value: "2000"
+          ports:
+            - containerPort: 2181
+              name: client
+            - containerPort: 2888
+              name: peer
+            - containerPort: 3888
+              name: leader-election
+          volumeMounts:
+            - name: datadir
+              mountPath: /data
+            # There's defaults in this folder, such as logging config
+            #- name: conf
+            #  mountPath: /conf
+      volumes:
+        #- name: conf
+        #  emptyDir: {}
+        - name: datadir
+          emptyDir: {}
+
+
