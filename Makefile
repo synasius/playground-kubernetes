@@ -24,7 +24,7 @@ kops:
 	@echo "Install kops"
 	@mkdir -p $(BINDIR)
 	curl -LO $(KOPS_URL)
-	mv kops-linux-amd64 $(BINDIR)/kops
+	mv kops-$(OS_TYPE)-amd64 $(BINDIR)/kops
 	chmod +x $(BINDIR)/kops
 
 .PHONY: kubectl
