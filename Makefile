@@ -21,7 +21,7 @@ INSTALL_PREFIX ?= $(HOME)/.local/bin
 
 
 .PHONY: all
-all: kops kubectl helm deis
+all: kops kubectl helm deis iam
 
 
 .PHONY: kops
@@ -31,6 +31,12 @@ kops:
 	curl -LO $(KOPS_URL)
 	mv kops-$(OS_TYPE)-amd64 $(BINDIR)/kops
 	chmod +x $(BINDIR)/kops
+
+.PHONY: iam
+iam:
+	@echo "Download script to create IAM user"
+	curl -LO https://raw.githubusercontent.com/kubernetes/kops/master/hack/new-iam-user.sh
+	chmod +x ./new-iam-user.sh
 
 .PHONY: kubectl
 kubectl:
