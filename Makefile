@@ -7,12 +7,12 @@ endif
 
 KUBERNETES_RELEASE := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
-KOPS_VERSION ?= 1.5.1
+KOPS_VERSION ?= 1.5.3
 KOPS_URL := https://github.com/kubernetes/kops/releases/download/$(KOPS_VERSION)/kops-$(OS_TYPE)-amd64
 
 KUBECTL_URL := https://storage.googleapis.com/kubernetes-release/release/$(KUBERNETES_RELEASE)/bin/$(OS_TYPE)/amd64/kubectl
 
-HELM_VERSION ?= v2.2.0
+HELM_VERSION ?= v2.2.2
 HELM_URL := https://kubernetes-helm.storage.googleapis.com/helm-$(HELM_VERSION)-$(OS_TYPE)-amd64.tar.gz
 
 
@@ -44,3 +44,8 @@ helm:
 	chmod +x $(BINDIR)/helm
 	rm helm-$(HELM_VERSION)-$(OS_TYPE)-amd64.tar.gz
 
+.PHONY: deis
+deis:
+	@echo "Install deis"
+	curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
+	mv deis $(BINDIR)/deis
