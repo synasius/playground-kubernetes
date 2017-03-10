@@ -17,6 +17,11 @@ HELM_URL := https://kubernetes-helm.storage.googleapis.com/helm-$(HELM_VERSION)-
 
 
 BINDIR := $(CURDIR)/bin
+INSTALL_PREFIX ?= $(HOME)/.local/bin
+
+
+.PHONY: all
+all: kops kubectl helm deis
 
 
 .PHONY: kops
@@ -49,3 +54,9 @@ deis:
 	@echo "Install deis"
 	curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
 	mv deis $(BINDIR)/deis
+
+
+.PHONY: install
+install:
+	@echo "Install binaries in ${INSTALL_PREFIX}"
+	cp -r $(BINDIR)/bin $(INSTALL_PREFIX)
