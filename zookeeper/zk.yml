@@ -4,6 +4,8 @@ metadata:
   name: zoo
 spec:
   ports:
+  - port: 2181
+    name: client
   - port: 2888
     name: peer
   - port: 3888
@@ -50,10 +52,31 @@ spec:
             # There's defaults in this folder, such as logging config
             #- name: conf
             #  mountPath: /conf
-      volumes:
+          volumeMounts:
+            - name: datadirlog
+              mountPath: /datalog
+     # volumes:
         #- name: conf
         #  emptyDir: {}
-        - name: datadir
-          emptyDir: {}
-
+        #- name: datadir
+        #  emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+      annotations:
+        volume.beta.kubernetes.io/storage-class: default
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
+  - metadata:
+      name: datadirlog
+      annotations:
+        volume.beta.kubernetes.io/storage-class: default
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
 
