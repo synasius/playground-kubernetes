@@ -7,12 +7,12 @@ endif
 
 KUBERNETES_RELEASE := $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 
-KOPS_VERSION ?= 1.5.3
+KOPS_VERSION ?= 1.6.2
 KOPS_URL := https://github.com/kubernetes/kops/releases/download/$(KOPS_VERSION)/kops-$(OS_TYPE)-amd64
 
 KUBECTL_URL := https://storage.googleapis.com/kubernetes-release/release/$(KUBERNETES_RELEASE)/bin/$(OS_TYPE)/amd64/kubectl
 
-HELM_VERSION ?= v2.2.2
+HELM_VERSION ?= v2.5.0
 HELM_URL := https://kubernetes-helm.storage.googleapis.com/helm-$(HELM_VERSION)-$(OS_TYPE)-amd64.tar.gz
 
 
