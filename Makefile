@@ -65,4 +65,4 @@ deis:
 .PHONY: install
 install:
 	@echo "Install binaries in ${INSTALL_PREFIX}"
-	cp -r $(BINDIR) $(INSTALL_PREFIX)
+	cp -r $(BINDIR)/* $(INSTALL_PREFIX)
