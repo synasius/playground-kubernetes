@@ -32,8 +32,12 @@ spec:
           ports:
             - containerPort: 9092
           env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: ZOOKEEPER_CONNECT
-              value: zoo-0.zoo.tutorial.svc.cluster.local:2181,zoo-1.zoo.tutorial.svc.cluster.local:2181,zoo-2.zoo.tutorial.svc.cluster.local:2181
+              value: zoo-0.zoo.$(NAMESPACE).svc.cluster.local:2181,zoo-1.zoo.$(NAMESPACE).svc.cluster.local:2181,zoo-2.zoo.$(NAMESPACE).svc.cluster.local:2181
           volumeMounts:
             - name: datadir
               mountPath: /opt/kafka/data
