@@ -33,8 +33,12 @@ spec:
           image: evonove/zookeeper:k8s
           imagePullPolicy: Always
           env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: ZOO_SERVERS
-              value: server.1=zoo-0.zoo.tutorial.svc.cluster.local:2888:3888 server.2=zoo-1.zoo.tutorial.svc.cluster.local:2888:3888 server.3=zoo-2.zoo.tutorial.svc.cluster.local:2888:3888
+              value: server.1=zoo-0.zoo.$(NAMESPACE).svc.cluster.local:2888:3888 server.2=zoo-1.zoo.$(NAMESPACE).svc.cluster.local:2888:3888 server.3=zoo-2.zoo.$(NAMESPACE).svc.cluster.local:2888:3888
             - name: ZOO_INIT_LIMIT
               value: "10"
             - name: ZOO_SYNC_LIMIT
